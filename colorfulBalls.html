@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>ColorfulBalls</title>
+	<style>
+		html,body {
+			width: 100%;
+			height: 100%;
+		}
+
+		body {
+			background-color: #000;
+			overflow: hidden;
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+</head>
+<body>
+	
+</body>
+<script>
+// 新建数组对象和颜色数组
+var ballArray = [];
+var bgColor = ["yellow", "red", "blue", "tomato", "green", "pink", "white", "purple"];
+window.onmousemove = function(event) {
+	var event = event || window.event;
+	// 创建小球
+	var colorfulBall = new ColorBall({
+		r: 60, // 初始化小球半径
+		x: event.clientX,
+		y: event.clientY,
+		bgcolor: bgColor[randomRange(0, bgColor.length - 1)] // 随机给小球添加背景颜色
+	});
+};
+
+setInterval(function() {
+	for (var i = 0; i < document.body.children.length; i++) {
+		// 清除小球留下的残影
+		document.body.removeChild(document.body.children[i]);
+	}
+	for (var i = 0; i < ballArray.length; i++) {
+		ballArray[i].render(); // 小球渲染
+		ballArray[i].update(); // 小球动态更新
+	}
+}, 80);
+
+function randomRange(min, max) {
+	// 返回一个 min 至 max 之间的随机整数
+	var tmp = max - min;
+	return Math.round(Math.random() * tmp) + min;
+}
+
+function ColorBall(option) {
+	this.init(option);
+}
+ColorBall.prototype = {
+	init: function(option) {
+		var option = option || {};
+		// 定义小球的半径
+		this.r = option.r;
+		// 定义小球出现的位置（圆心在鼠标处）
+		this.x = option.x - option.r * 0.5;
+		this.y = option.y - option.r * 0.5;
+		this.bgcolor = option.bgcolor;
+		// 变化范围
+		this.dx = randomRange(-5, 5);
+		this.dy = randomRange(-5, 5);
+		this.dr = randomRange(1, 5);
+		// 创建的小球加入数组
+		ballArray.push(this);
+	},	
+	render: function() {
+		// 创建小球，将小球添加到页面中
+		var ball = document.createElement('div'); // dom对象
+		ball.style.width = this.r + "px";
+		ball.style.height = this.r + "px";
+		ball.style.position = "absolute";
+		ball.style.left = this.x + "px";
+		ball.style.top = this.y + "px";
+		ball.style.backgroundColor = this.bgcolor;
+		ball.style.borderRadius = "50%";
+		document.body.appendChild(ball);
+	},
+	update: function() {
+		// 小球动态变化
+		this.x += this.dx;
+		this.y += this.dy;
+		this.r -= this.dr;
+		for (var i = 0; i < ballArray.length; i++) {
+			if (ballArray[i].r < 0) {
+				ballArray.splice(i, 1);
+			}
+		}
+	}
+}
+</script>
+</html>
